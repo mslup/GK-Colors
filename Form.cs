@@ -5,13 +5,21 @@ namespace lab3
         private DirectBitmap image;
         private ColorHistogram histogram;
 
+        private DirectBitmap filterBuffer;
+        private DirectBitmap outputBuffer;
+
+        private bool isDrawing;
+        private PaintBrush brush;
+
         public Application()
         {
             InitializeComponent();
 
-            image = new DirectBitmap(canvas.Width, canvas.Height);
-            canvas.SizeMode = PictureBoxSizeMode.StretchImage;
+            filterBuffer = new DirectBitmap(canvas.Width + 1, canvas.Height + 1);
+            outputBuffer = new DirectBitmap(canvas.Width + 1, canvas.Height + 1);
+            brush = new PaintBrush();
 
+            canvas.SizeMode = PictureBoxSizeMode.StretchImage;
             SetImage(Image.FromFile("C:\\Users\\marci\\Pictures\\original.jpg"));
         }
 
@@ -40,29 +48,25 @@ namespace lab3
             {
                 SetImage(Image.FromFile(chooseFileDialog.FileName));
             }
-
         }
 
         private void SetImage(Image img)
         {
             image = new DirectBitmap(img, canvas.Width + 1, canvas.Height + 1);
-            canvas.Image = img;
 
             histogram = new ColorHistogram(image);
 
             histogramGroupBox.Refresh();
+            canvas.Refresh();
         }
 
-        private void redHistogramPictureBox_Click(object sender, EventArgs e)
-        {
-        }
 
         private void redHistogramPictureBox_Paint(object sender, PaintEventArgs e)
         {
             if (histogram != null)
-                histogram.DrawHistogram(e.Graphics, 
+                histogram.DrawHistogram(e.Graphics,
                     ColorHistogram.HistogramColor.RED,
-                    redHistogramPictureBox.Width, 
+                    redHistogramPictureBox.Width,
                     redHistogramPictureBox.Height);
         }
 
@@ -82,6 +86,54 @@ namespace lab3
                     ColorHistogram.HistogramColor.BLUE,
                     blueHistogramPictureBox.Width,
                     blueHistogramPictureBox.Height);
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void canvas_Paint(object sender, PaintEventArgs e)
+        {
+            var g = e.Graphics;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            for (int i = 0; i < canvas.Width; ++i)
+            {
+                for (int j = 0; j < canvas.Height; ++j)
+                {
+                    Color col;
+                    if (filterBuffer.IsPixelColored(i, j))
+                        col = Color.Black;
+                    else
+                        col = image.GetPixel(i, j);
+
+                    outputBuffer.SetPixel(i, j, col);
+                }
+            }
+
+            g.DrawImage(outputBuffer.Bitmap, 0, 0);
+        }
+
+        private void canvas_MouseDown(object sender, MouseEventArgs e)
+        {
+            isDrawing = true;
+        }
+
+        private void canvas_MouseUp(object sender, MouseEventArgs e)
+        {
+            isDrawing = false;
+        }
+
+        private void canvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            brush.Position = e.Location;
+            if (isDrawing)
+            {
+                //filterBuffer.SetPixelColored(e.X, e.Y);
+                brush.PaintOnBitmap(filterBuffer);
+            }
+            canvas.Refresh();
         }
     }
 }

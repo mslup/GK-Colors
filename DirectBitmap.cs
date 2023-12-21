@@ -71,6 +71,16 @@ namespace lab3
             return result;
         }
 
+        public bool IsPixelColored(int x, int y)
+        {
+            return Bits[x + (y * Width)] != 0;
+        }
+
+        public void SetPixelColored(int x, int y)
+        {
+            Bits[x + (y * Width)] = Color.Black.ToArgb();
+        }
+
         public void Dispose()
         {
             if (Disposed) return;

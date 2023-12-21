@@ -30,6 +30,10 @@
         {
             splitContainer1 = new SplitContainer();
             canvas = new PictureBox();
+            groupBox1 = new GroupBox();
+            groupBox2 = new GroupBox();
+            radioButton2 = new RadioButton();
+            radioButton1 = new RadioButton();
             histogramGroupBox = new GroupBox();
             blueHistogramPictureBox = new PictureBox();
             greenHistogramPictureBox = new PictureBox();
@@ -38,12 +42,13 @@
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             chooseToolStripMenuItem = new ToolStripMenuItem();
-            groupBox1 = new GroupBox();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)canvas).BeginInit();
+            groupBox1.SuspendLayout();
+            groupBox2.SuspendLayout();
             histogramGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)blueHistogramPictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)greenHistogramPictureBox).BeginInit();
@@ -79,6 +84,58 @@
             canvas.Size = new Size(432, 426);
             canvas.TabIndex = 0;
             canvas.TabStop = false;
+            canvas.Paint += canvas_Paint;
+            canvas.MouseDown += canvas_MouseDown;
+            canvas.MouseMove += canvas_MouseMove;
+            canvas.MouseUp += canvas_MouseUp;
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(groupBox2);
+            groupBox1.Dock = DockStyle.Fill;
+            groupBox1.Location = new Point(262, 0);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(361, 426);
+            groupBox1.TabIndex = 1;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Filter";
+            // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(radioButton2);
+            groupBox2.Controls.Add(radioButton1);
+            groupBox2.Dock = DockStyle.Top;
+            groupBox2.Location = new Point(3, 19);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(355, 100);
+            groupBox2.TabIndex = 0;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Region";
+            // 
+            // radioButton2
+            // 
+            radioButton2.AutoSize = true;
+            radioButton2.Dock = DockStyle.Top;
+            radioButton2.Location = new Point(3, 38);
+            radioButton2.Name = "radioButton2";
+            radioButton2.Size = new Size(349, 19);
+            radioButton2.TabIndex = 1;
+            radioButton2.TabStop = true;
+            radioButton2.Text = "Brush";
+            radioButton2.UseVisualStyleBackColor = true;
+            radioButton2.CheckedChanged += radioButton2_CheckedChanged;
+            // 
+            // radioButton1
+            // 
+            radioButton1.AutoSize = true;
+            radioButton1.Dock = DockStyle.Top;
+            radioButton1.Location = new Point(3, 19);
+            radioButton1.Name = "radioButton1";
+            radioButton1.Size = new Size(349, 19);
+            radioButton1.TabIndex = 0;
+            radioButton1.TabStop = true;
+            radioButton1.Text = "Whole image";
+            radioButton1.UseVisualStyleBackColor = true;
             // 
             // histogramGroupBox
             // 
@@ -154,16 +211,6 @@
             chooseToolStripMenuItem.Text = "Import";
             chooseToolStripMenuItem.Click += importToolStripMenuItem_Click;
             // 
-            // groupBox1
-            // 
-            groupBox1.Dock = DockStyle.Fill;
-            groupBox1.Location = new Point(262, 0);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(361, 426);
-            groupBox1.TabIndex = 1;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Filter";
-            // 
             // Application
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -179,6 +226,9 @@
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)canvas).EndInit();
+            groupBox1.ResumeLayout(false);
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
             histogramGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)blueHistogramPictureBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)greenHistogramPictureBox).EndInit();
@@ -202,5 +252,8 @@
         private PictureBox blueHistogramPictureBox;
         private PictureBox greenHistogramPictureBox;
         private GroupBox groupBox1;
+        private GroupBox groupBox2;
+        private RadioButton radioButton2;
+        private RadioButton radioButton1;
     }
 }
