@@ -69,6 +69,12 @@
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             chooseToolStripMenuItem = new ToolStripMenuItem();
+            choosePredefinedImageToolStripMenuItem = new ToolStripMenuItem();
+            dogToolStripMenuItem = new ToolStripMenuItem();
+            pKiNToolStripMenuItem = new ToolStripMenuItem();
+            wavesToolStripMenuItem = new ToolStripMenuItem();
+            mountainToolStripMenuItem = new ToolStripMenuItem();
+            flowersToolStripMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -178,12 +184,12 @@
             // 
             offsetSlider.Dock = DockStyle.Right;
             offsetSlider.Location = new Point(55, 0);
-            offsetSlider.Maximum = 100;
-            offsetSlider.Minimum = -100;
+            offsetSlider.Maximum = 200;
+            offsetSlider.Minimum = -200;
             offsetSlider.Name = "offsetSlider";
             offsetSlider.Size = new Size(171, 28);
             offsetSlider.TabIndex = 7;
-            offsetSlider.TickFrequency = 20;
+            offsetSlider.TickFrequency = 40;
             offsetSlider.Scroll += offsetSlider_Scroll;
             // 
             // label2
@@ -212,7 +218,8 @@
             // divisorInput
             // 
             divisorInput.Location = new Point(55, 3);
-            divisorInput.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            divisorInput.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
+            divisorInput.Minimum = new decimal(new int[] { 100000, 0, 0, int.MinValue });
             divisorInput.Name = "divisorInput";
             divisorInput.Size = new Size(52, 23);
             divisorInput.TabIndex = 3;
@@ -548,17 +555,59 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { chooseToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { chooseToolStripMenuItem, choosePredefinedImageToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            fileToolStripMenuItem.Size = new Size(37, 20);
-            fileToolStripMenuItem.Text = "File";
+            fileToolStripMenuItem.Size = new Size(52, 20);
+            fileToolStripMenuItem.Text = "Image";
             // 
             // chooseToolStripMenuItem
             // 
             chooseToolStripMenuItem.Name = "chooseToolStripMenuItem";
-            chooseToolStripMenuItem.Size = new Size(110, 22);
-            chooseToolStripMenuItem.Text = "Import";
+            chooseToolStripMenuItem.Size = new Size(174, 22);
+            chooseToolStripMenuItem.Text = "Import file";
             chooseToolStripMenuItem.Click += importToolStripMenuItem_Click;
+            // 
+            // choosePredefinedImageToolStripMenuItem
+            // 
+            choosePredefinedImageToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { dogToolStripMenuItem, pKiNToolStripMenuItem, wavesToolStripMenuItem, mountainToolStripMenuItem, flowersToolStripMenuItem });
+            choosePredefinedImageToolStripMenuItem.Name = "choosePredefinedImageToolStripMenuItem";
+            choosePredefinedImageToolStripMenuItem.Size = new Size(174, 22);
+            choosePredefinedImageToolStripMenuItem.Text = "Choose predefined";
+            // 
+            // dogToolStripMenuItem
+            // 
+            dogToolStripMenuItem.Name = "dogToolStripMenuItem";
+            dogToolStripMenuItem.Size = new Size(126, 22);
+            dogToolStripMenuItem.Text = "Dog";
+            dogToolStripMenuItem.Click += dogToolStripMenuItem_Click;
+            // 
+            // pKiNToolStripMenuItem
+            // 
+            pKiNToolStripMenuItem.Name = "pKiNToolStripMenuItem";
+            pKiNToolStripMenuItem.Size = new Size(126, 22);
+            pKiNToolStripMenuItem.Text = "PKiN";
+            pKiNToolStripMenuItem.Click += pKiNToolStripMenuItem_Click;
+            // 
+            // wavesToolStripMenuItem
+            // 
+            wavesToolStripMenuItem.Name = "wavesToolStripMenuItem";
+            wavesToolStripMenuItem.Size = new Size(126, 22);
+            wavesToolStripMenuItem.Text = "Waves";
+            wavesToolStripMenuItem.Click += wavesToolStripMenuItem_Click;
+            // 
+            // mountainToolStripMenuItem
+            // 
+            mountainToolStripMenuItem.Name = "mountainToolStripMenuItem";
+            mountainToolStripMenuItem.Size = new Size(126, 22);
+            mountainToolStripMenuItem.Text = "Mountain";
+            mountainToolStripMenuItem.Click += mountainToolStripMenuItem_Click;
+            // 
+            // flowersToolStripMenuItem
+            // 
+            flowersToolStripMenuItem.Name = "flowersToolStripMenuItem";
+            flowersToolStripMenuItem.Size = new Size(126, 22);
+            flowersToolStripMenuItem.Text = "Flowers";
+            flowersToolStripMenuItem.Click += flowersToolStripMenuItem_Click;
             // 
             // Application
             // 
@@ -567,7 +616,9 @@
             ClientSize = new Size(953, 450);
             Controls.Add(splitContainer1);
             Controls.Add(menuStrip1);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             MainMenuStrip = menuStrip1;
+            MaximizeBox = false;
             Name = "Application";
             Text = "Form1";
             splitContainer1.Panel1.ResumeLayout(false);
@@ -653,5 +704,11 @@
         private Panel panel6;
         private Label label2;
         private TrackBar offsetSlider;
+        private ToolStripMenuItem choosePredefinedImageToolStripMenuItem;
+        private ToolStripMenuItem dogToolStripMenuItem;
+        private ToolStripMenuItem pKiNToolStripMenuItem;
+        private ToolStripMenuItem wavesToolStripMenuItem;
+        private ToolStripMenuItem mountainToolStripMenuItem;
+        private ToolStripMenuItem flowersToolStripMenuItem;
     }
 }

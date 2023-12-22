@@ -1,5 +1,7 @@
 using System.Drawing.Drawing2D;
+using System.Resources;
 using System.Security.Principal;
+using lab3.Properties;
 using Microsoft.VisualBasic.Logging;
 using static System.Windows.Forms.AxHost;
 
@@ -41,7 +43,7 @@ namespace lab3
             filterBuffer = new DirectBitmap(canvas.Width + 1, canvas.Height + 1);
             outputBuffer = new DirectBitmap(canvas.Width + 1, canvas.Height + 1);
 
-            SetImage(Image.FromFile("C:\\Users\\marci\\Pictures\\original.jpg"));
+            SetImage((Image)Resources.ResourceManager.GetObject("fale")!);
 
             filterMode = FilterApplyModes.Brush;
             brushRadioButton.Checked = true;
@@ -124,7 +126,6 @@ namespace lab3
 
             if (filterMode == FilterApplyModes.Brush)
             {
-                // todo: move pen outside
                 Pen dashedPen = new Pen(new SolidBrush(Color.Bisque));
                 dashedPen.DashStyle = DashStyle.Dash;
                 g.DrawEllipse(dashedPen,
@@ -168,7 +169,7 @@ namespace lab3
             if (filterMode == FilterApplyModes.Brush && isDrawing)
             {
                 brush.PaintOnBitmap(filterBuffer, eraseCheckBox.Checked);
-                UpdateImage(false);
+                UpdateImage();
             }
 
             canvas.Refresh();
@@ -296,94 +297,67 @@ namespace lab3
             UpdateImage();
         }
 
-        private void m00Input_ValueChanged(object sender, EventArgs e)
+        private void matrixInputChanged(int i, int j, float value)
         {
             if (ignoreFilterUpdate)
                 return;
 
-            filter.Matrix[0, 0] = (float)m00Input.Value;
+            filter.Matrix[i, j] = value;
             filterTypeComboBox.SelectedItem = "Custom";
+
+            if (autoDivisorCheckBox.Checked)
+            { 
+                filter.CalculateDivisor();
+                ignoreFilterUpdate = true;
+                divisorInput.Value = (decimal)filter.Divisor;
+                ignoreFilterUpdate = false;
+            }
             UpdateImage();
+        }
+
+        private void m00Input_ValueChanged(object sender, EventArgs e)
+        {
+            matrixInputChanged(0, 0, (float)m00Input.Value);
         }
 
         private void m01Input_ValueChanged(object sender, EventArgs e)
         {
-            if (ignoreFilterUpdate)
-                return;
-
-            filter.Matrix[0, 1] = (float)m01Input.Value;
-            filterTypeComboBox.SelectedItem = "Custom";
-            UpdateImage();
+            matrixInputChanged(0, 1, (float)m01Input.Value);
         }
 
         private void m02Input_ValueChanged(object sender, EventArgs e)
         {
-            if (ignoreFilterUpdate)
-                return;
-
-            filter.Matrix[0, 2] = (float)m02Input.Value;
-            filterTypeComboBox.SelectedItem = "Custom";
-            UpdateImage();
+            matrixInputChanged(0, 2, (float)m02Input.Value);
         }
 
         private void m10Input_ValueChanged(object sender, EventArgs e)
         {
-            if (ignoreFilterUpdate)
-                return;
-
-            filter.Matrix[1, 0] = (float)m10Input.Value;
-            filterTypeComboBox.SelectedItem = "Custom";
-            UpdateImage();
+            matrixInputChanged(1, 0, (float)m10Input.Value);
         }
 
         private void m11Input_ValueChanged(object sender, EventArgs e)
         {
-            if (ignoreFilterUpdate)
-                return;
-
-            filter.Matrix[1, 1] = (float)m11Input.Value;
-            filterTypeComboBox.SelectedItem = "Custom";
-            UpdateImage();
+            matrixInputChanged(1, 1, (float)m11Input.Value);
         }
 
         private void m12Input_ValueChanged(object sender, EventArgs e)
         {
-            if (ignoreFilterUpdate)
-                return;
-
-            filter.Matrix[1, 2] = (float)m12Input.Value;
-            filterTypeComboBox.SelectedItem = "Custom";
-            UpdateImage();
+            matrixInputChanged(1, 2, (float)m12Input.Value);
         }
 
         private void m20Input_ValueChanged(object sender, EventArgs e)
         {
-            if (ignoreFilterUpdate)
-                return;
-
-            filter.Matrix[2, 0] = (float)m20Input.Value;
-            filterTypeComboBox.SelectedItem = "Custom";
-            UpdateImage();
+            matrixInputChanged(2, 0, (float)m20Input.Value);
         }
 
         private void m21Input_ValueChanged(object sender, EventArgs e)
         {
-            if (ignoreFilterUpdate)
-                return;
-
-            filter.Matrix[2, 1] = (float)m21Input.Value;
-            filterTypeComboBox.SelectedItem = "Custom";
-            UpdateImage();
+            matrixInputChanged(2, 1, (float)m21Input.Value);
         }
 
         private void m22Input_ValueChanged(object sender, EventArgs e)
         {
-            if (ignoreFilterUpdate)
-                return;
-
-            filter.Matrix[2, 2] = (float)m22Input.Value;
-            filterTypeComboBox.SelectedItem = "Custom";
-            UpdateImage();
+            matrixInputChanged(2, 2, (float)m22Input.Value);
         }
 
         private void resetButton_Click(object sender, EventArgs e)
@@ -406,6 +380,32 @@ namespace lab3
             filter.Offset = offsetSlider.Value;
             filterTypeComboBox.SelectedItem = "Custom";
             UpdateImage();
+        }
+
+
+        private void dogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetImage((Image)Resources.ResourceManager.GetObject("original")!);
+        }
+
+        private void pKiNToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetImage((Image)Resources.ResourceManager.GetObject("pkin")!);
+        }
+
+        private void wavesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetImage((Image)Resources.ResourceManager.GetObject("fale")!);
+        }
+
+        private void mountainToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetImage((Image)Resources.ResourceManager.GetObject("gora")!);
+        }
+
+        private void flowersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetImage((Image)Resources.ResourceManager.GetObject("maki")!);
         }
     }
 }

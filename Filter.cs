@@ -40,6 +40,8 @@ namespace lab3
 
             if (Divisor == 0)
                 Divisor = 1;
+
+            //Divisor = Math.Abs(Divisor);
         }
 
         public Color Apply(ref DirectBitmap image, int x, int y)
