@@ -15,48 +15,50 @@ namespace lab3
             RED, GREEN, BLUE
         };
 
-        private Dictionary<int, int> RedBins;
-        private Dictionary<int, int> GreenBins;
-        private Dictionary<int, int> BlueBins;
+        private int[] RedBins;
+        private int[] GreenBins;
+        private int[] BlueBins;
 
         public ColorHistogram(DirectBitmap bmp)
         {
-            RedBins = new Dictionary<int, int>();
-            GreenBins = new Dictionary<int, int>();
-            BlueBins = new Dictionary<int, int>();
+            RedBins = new int[256];
+            GreenBins = new int[256];
+            BlueBins = new int[256];
 
             CalculateHistogram(bmp);
         }
 
         public void CalculateHistogram(DirectBitmap bmp)
         {
+            //Parallel.For(0, 256, i =>
             for (int i = 0; i < 256; i++)
             {
                 RedBins[i] = 0;
                 GreenBins[i] = 0;
                 BlueBins[i] = 0;
             }
+            //);
 
+            //Parallel.For(0, bmp.Width, i =>
             for (int i = 0; i < bmp.Width; i++)
             {
-                for (int j = 0; j < bmp.Height; j++)
+                //Parallel.For(0, bmp.Height, j =>
+                for (int j = 0; j < bmp.Height; j++) 
                 {
                     Color col = bmp.GetPixel(i, j);
 
-                    int r = col.R;
-                    int g = col.G;
-                    int b = col.B;
-
-                    RedBins[r]++;
-                    GreenBins[g]++;
-                    BlueBins[b]++;
+                    RedBins[col.R]++;
+                    GreenBins[col.G]++;
+                    BlueBins[col.B]++;
                 }
+                //);
             }
+            //);
         }
 
         public void DrawHistogram(Graphics g, HistogramColor type, int width, int height)
         {
-            Dictionary<int, int> bins;
+            int[] bins;
             Color col;
 
             switch (type)
@@ -77,10 +79,10 @@ namespace lab3
                 return;
             }
 
-            int max = bins.Values.Max();
+            int max = bins.Max();
             Pen pen = new Pen(new SolidBrush(col));
 
-            for (int i = 0; i < 255; ++i)
+            for (int i = 0; i < 256; ++i)
             {
                 g.DrawLine(pen, i, height, i, height - (int)((1.0 * bins[i] / max) * height));
             }

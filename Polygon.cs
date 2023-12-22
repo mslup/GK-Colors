@@ -10,6 +10,9 @@ namespace lab3
 {
     internal class Polygon
     {
+        private static int lineWidth = 2;
+        private static Pen linePen = new Pen(Color.PeachPuff, lineWidth);
+
         public List<Point> vertices;
 
         public Polygon()
@@ -19,13 +22,20 @@ namespace lab3
 
         public void DrawUnfinishedPolygon(Graphics g, Point point)
         {
+            Point? prev = null;
+            // todo: move linepen out of here as well
             foreach (Point p in vertices) 
             {
                 g.DrawPoint(p);
+                if (prev != null)
+                    g.DrawLine(linePen, (Point)prev, p);
+                prev = p;
             }
+            if (prev != null)
+                g.DrawLine(linePen, (Point)prev, point);
         }
 
-        public void FillPolygon(Graphics g)
+        public void FillPolygon(Graphics g, bool erase)
         {
             Point[] points = new Point[vertices.Count];
             byte[] types = new byte[vertices.Count];
@@ -37,7 +47,7 @@ namespace lab3
                 it++;
             }
 
-            g.FillPath(new SolidBrush(Color.Black), new GraphicsPath(points, types));//, FillMode.Winding));
+            g.FillPath(new SolidBrush(erase ? Color.Black : Color.White), new GraphicsPath(points, types));//, FillMode.Winding));
         }
     }
 }

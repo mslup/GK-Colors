@@ -47,11 +47,11 @@ namespace lab3
             Bitmap = new Bitmap(Width, Height, Width * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject());
         }
 
-        public void SetToBlack()
+        public void SetFilled()
         {
-            for (int i = 0; i < Height; ++i)
-                for (int j = 0; j < Width; ++j)
-                    SetPixel(i, j, Color.Black);
+            for (int i = 0; i < Width; ++i)
+                for (int j = 0; j < Height; ++j)
+                    SetPixel(i, j, Color.White);
         }
 
         public void SetPixel(int x, int y, Color colour)
@@ -73,12 +73,7 @@ namespace lab3
 
         public bool IsPixelColored(int x, int y)
         {
-            return Bits[x + (y * Width)] != 0;
-        }
-
-        public void SetPixelColored(int x, int y)
-        {
-            Bits[x + (y * Width)] = Color.Black.ToArgb();
+            return Bits[x + (y * Width)] == Color.White.ToArgb();
         }
 
         public void Dispose()

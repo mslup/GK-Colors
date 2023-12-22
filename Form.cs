@@ -1,4 +1,5 @@
 using System.Drawing.Drawing2D;
+using System.Security.Principal;
 using Microsoft.VisualBasic.Logging;
 using static System.Windows.Forms.AxHost;
 
@@ -19,6 +20,8 @@ namespace lab3
         private Polygon polygon;
         private Point mousePos;
 
+        private bool ignoreFilterUpdate = false;
+
         private enum FilterApplyModes
         {
             Brush, Polygon
@@ -30,34 +33,24 @@ namespace lab3
             InitializeComponent();
 
             brush = new PaintBrush(brushRadiusSlider.Value);
-            filter = new Filter();
+            filter = Filter.Identity;
             polygon = new Polygon();
-            filterMode = FilterApplyModes.Polygon;
 
             canvas.SizeMode = PictureBoxSizeMode.StretchImage;
-            SetImage(Image.FromFile("C:\\Users\\marci\\Pictures\\original.jpg"));
 
             filterBuffer = new DirectBitmap(canvas.Width + 1, canvas.Height + 1);
             outputBuffer = new DirectBitmap(canvas.Width + 1, canvas.Height + 1);
 
+            SetImage(Image.FromFile("C:\\Users\\marci\\Pictures\\original.jpg"));
+
+            filterMode = FilterApplyModes.Brush;
+            brushRadioButton.Checked = true;
+
+            filterTypeComboBox.SelectedItem = "Identity";
+
             FillOutputBuffer();
         }
 
-
-        private void splitContainer1_Panel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void openFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-
-        }
 
         private void importToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -76,8 +69,7 @@ namespace lab3
 
             histogram = new ColorHistogram(image);
 
-            histogramGroupBox.Refresh();
-            canvas.Refresh();
+            UpdateImage();
         }
 
         private void FillOutputBuffer()
@@ -132,7 +124,7 @@ namespace lab3
 
             if (filterMode == FilterApplyModes.Brush)
             {
-                // todo: move this outside
+                // todo: move pen outside
                 Pen dashedPen = new Pen(new SolidBrush(Color.Bisque));
                 dashedPen.DashStyle = DashStyle.Dash;
                 g.DrawEllipse(dashedPen,
@@ -155,6 +147,18 @@ namespace lab3
         private void canvas_MouseUp(object sender, MouseEventArgs e)
         {
             isDrawing = false;
+            UpdateImage();
+        }
+
+        private void UpdateImage(bool refreshHistograms = true)
+        {
+            FillOutputBuffer();
+            if (refreshHistograms)
+            {
+                histogram.CalculateHistogram(outputBuffer);
+                histogramGroupBox.Refresh();
+            }
+            canvas.Refresh();
         }
 
         private void canvas_MouseMove(object sender, MouseEventArgs e)
@@ -163,12 +167,8 @@ namespace lab3
             brush.Position = mousePos;
             if (filterMode == FilterApplyModes.Brush && isDrawing)
             {
-                brush.PaintOnBitmap(filterBuffer);
-
-                FillOutputBuffer();
-
-                histogram.CalculateHistogram(outputBuffer);
-                histogramGroupBox.Refresh();
+                brush.PaintOnBitmap(filterBuffer, eraseCheckBox.Checked);
+                UpdateImage(false);
             }
 
             canvas.Refresh();
@@ -177,11 +177,6 @@ namespace lab3
         private void brushRadiusSlider_ValueChanged(object sender, EventArgs e)
         {
             brush.Radius = brushRadiusSlider.Value;
-        }
-
-        private void canvas_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void canvas_MouseClick(object sender, MouseEventArgs e)
@@ -194,12 +189,10 @@ namespace lab3
                     if (initialPoint.IsCloseToPoint(e.Location))
                     {
                         using (var g = Graphics.FromImage(filterBuffer.Bitmap))
-                            polygon.FillPolygon(g);
+                            polygon.FillPolygon(g, eraseCheckBox.Checked);
 
-                        FillOutputBuffer();
+                        UpdateImage();
                         polygon = new Polygon();
-
-                        canvas.Refresh();
 
                         return;
                     }
@@ -207,6 +200,212 @@ namespace lab3
 
                 polygon.vertices.Add(e.Location);
             }
+        }
+
+        private void brushRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (brushRadioButton.Checked)
+            {
+                filterMode = FilterApplyModes.Brush;
+                brushRadiusSlider.Enabled = true;
+            }
+        }
+
+        private void polygonRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (polygonRadioButton.Checked)
+            {
+                filterMode = FilterApplyModes.Polygon;
+                brushRadiusSlider.Enabled = false;
+                polygon = new Polygon();
+            }
+        }
+
+
+        private void filterTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (filterTypeComboBox.SelectedItem)
+            {
+            case "Identity":
+                filter = Filter.Identity;
+                autoDivisorCheckBox.Checked = true;
+                break;
+            case "Edge detection":
+                filter = Filter.EdgeDetection;
+                break;
+            case "Sharpen":
+                filter = Filter.Sharpen;
+                autoDivisorCheckBox.Checked = true;
+                break;
+            case "Box blur":
+                filter = Filter.BoxBlur;
+                autoDivisorCheckBox.Checked = true;
+                break;
+            case "Gaussian blur":
+                filter = Filter.GaussBlur;
+                autoDivisorCheckBox.Checked = true;
+                break;
+            case "Sculpt SE":
+                filter = Filter.SculptSE;
+                autoDivisorCheckBox.Checked = true;
+                break;
+            }
+
+
+            ignoreFilterUpdate = true;
+            divisorInput.Value = (decimal)filter.Divisor;
+            offsetSlider.Value = filter.Offset;
+            m00Input.Value = (decimal)filter.Matrix[0, 0];
+            m01Input.Value = (decimal)filter.Matrix[0, 1];
+            m02Input.Value = (decimal)filter.Matrix[0, 2];
+            m10Input.Value = (decimal)filter.Matrix[1, 0];
+            m11Input.Value = (decimal)filter.Matrix[1, 1];
+            m12Input.Value = (decimal)filter.Matrix[1, 2];
+            m20Input.Value = (decimal)filter.Matrix[2, 0];
+            m21Input.Value = (decimal)filter.Matrix[2, 1];
+            m22Input.Value = (decimal)filter.Matrix[2, 2];
+            ignoreFilterUpdate = false;
+
+            UpdateImage();
+        }
+
+        private void autoDivisorCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            divisorInput.Enabled = !autoDivisorCheckBox.Checked;
+            if (autoDivisorCheckBox.Checked)
+            {
+                filter.CalculateDivisor();
+                ignoreFilterUpdate = true;
+                divisorInput.Value = (decimal)filter.Divisor;
+                ignoreFilterUpdate = false;
+            }
+            else
+            {
+                filter.Divisor = (float)divisorInput.Value;
+            }
+            UpdateImage();
+        }
+
+        private void divisorInput_ValueChanged(object sender, EventArgs e)
+        {
+            if (ignoreFilterUpdate)
+                return;
+
+            filter.Divisor = (float)divisorInput.Value;
+            filterTypeComboBox.SelectedItem = "Custom";
+            UpdateImage();
+        }
+
+        private void m00Input_ValueChanged(object sender, EventArgs e)
+        {
+            if (ignoreFilterUpdate)
+                return;
+
+            filter.Matrix[0, 0] = (float)m00Input.Value;
+            filterTypeComboBox.SelectedItem = "Custom";
+            UpdateImage();
+        }
+
+        private void m01Input_ValueChanged(object sender, EventArgs e)
+        {
+            if (ignoreFilterUpdate)
+                return;
+
+            filter.Matrix[0, 1] = (float)m01Input.Value;
+            filterTypeComboBox.SelectedItem = "Custom";
+            UpdateImage();
+        }
+
+        private void m02Input_ValueChanged(object sender, EventArgs e)
+        {
+            if (ignoreFilterUpdate)
+                return;
+
+            filter.Matrix[0, 2] = (float)m02Input.Value;
+            filterTypeComboBox.SelectedItem = "Custom";
+            UpdateImage();
+        }
+
+        private void m10Input_ValueChanged(object sender, EventArgs e)
+        {
+            if (ignoreFilterUpdate)
+                return;
+
+            filter.Matrix[1, 0] = (float)m10Input.Value;
+            filterTypeComboBox.SelectedItem = "Custom";
+            UpdateImage();
+        }
+
+        private void m11Input_ValueChanged(object sender, EventArgs e)
+        {
+            if (ignoreFilterUpdate)
+                return;
+
+            filter.Matrix[1, 1] = (float)m11Input.Value;
+            filterTypeComboBox.SelectedItem = "Custom";
+            UpdateImage();
+        }
+
+        private void m12Input_ValueChanged(object sender, EventArgs e)
+        {
+            if (ignoreFilterUpdate)
+                return;
+
+            filter.Matrix[1, 2] = (float)m12Input.Value;
+            filterTypeComboBox.SelectedItem = "Custom";
+            UpdateImage();
+        }
+
+        private void m20Input_ValueChanged(object sender, EventArgs e)
+        {
+            if (ignoreFilterUpdate)
+                return;
+
+            filter.Matrix[2, 0] = (float)m20Input.Value;
+            filterTypeComboBox.SelectedItem = "Custom";
+            UpdateImage();
+        }
+
+        private void m21Input_ValueChanged(object sender, EventArgs e)
+        {
+            if (ignoreFilterUpdate)
+                return;
+
+            filter.Matrix[2, 1] = (float)m21Input.Value;
+            filterTypeComboBox.SelectedItem = "Custom";
+            UpdateImage();
+        }
+
+        private void m22Input_ValueChanged(object sender, EventArgs e)
+        {
+            if (ignoreFilterUpdate)
+                return;
+
+            filter.Matrix[2, 2] = (float)m22Input.Value;
+            filterTypeComboBox.SelectedItem = "Custom";
+            UpdateImage();
+        }
+
+        private void resetButton_Click(object sender, EventArgs e)
+        {
+            filterBuffer.Clear();
+            UpdateImage();
+        }
+
+        private void wholeImageButton_Click(object sender, EventArgs e)
+        {
+            filterBuffer.SetFilled();
+            UpdateImage();
+        }
+
+        private void offsetSlider_Scroll(object sender, EventArgs e)
+        {
+            if (ignoreFilterUpdate)
+                return;
+
+            filter.Offset = offsetSlider.Value;
+            filterTypeComboBox.SelectedItem = "Custom";
+            UpdateImage();
         }
     }
 }

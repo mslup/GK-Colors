@@ -17,7 +17,7 @@ namespace lab3
             Radius = r;
         }
 
-        public void PaintOnBitmap(DirectBitmap bitmap)
+        public void PaintOnBitmap(DirectBitmap bitmap, bool erase)
         {
             int iStart = Math.Max(Position.X - Radius, 0);
             int jStart = Math.Max(Position.Y - Radius, 0);
@@ -31,7 +31,7 @@ namespace lab3
                 //Parallel.For(jStart, jEnd, j =>
                 {
                     if (IsInsideCircle(i, j))
-                        bitmap.SetPixelColored(i, j);
+                        bitmap.SetPixel(i, j, erase ? Color.Black : Color.White);
                 }
                 //);
             }
