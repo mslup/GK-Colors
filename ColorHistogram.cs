@@ -19,14 +19,17 @@ namespace lab3
         private Dictionary<int, int> GreenBins;
         private Dictionary<int, int> BlueBins;
 
-        private int pixelCount;
-
         public ColorHistogram(DirectBitmap bmp)
         {
             RedBins = new Dictionary<int, int>();
             GreenBins = new Dictionary<int, int>();
             BlueBins = new Dictionary<int, int>();
 
+            CalculateHistogram(bmp);
+        }
+
+        public void CalculateHistogram(DirectBitmap bmp)
+        {
             for (int i = 0; i < 256; i++)
             {
                 RedBins[i] = 0;
@@ -34,12 +37,6 @@ namespace lab3
                 BlueBins[i] = 0;
             }
 
-            pixelCount = bmp.Width * bmp.Height;
-            CalculateHistogram(bmp);
-        }
-
-        private void CalculateHistogram(DirectBitmap bmp)
-        {
             for (int i = 0; i < bmp.Width; i++)
             {
                 for (int j = 0; j < bmp.Height; j++)

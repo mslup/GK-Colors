@@ -32,6 +32,7 @@
             canvas = new PictureBox();
             groupBox1 = new GroupBox();
             groupBox2 = new GroupBox();
+            brushRadiusSlider = new TrackBar();
             radioButton2 = new RadioButton();
             radioButton1 = new RadioButton();
             histogramGroupBox = new GroupBox();
@@ -49,6 +50,7 @@
             ((System.ComponentModel.ISupportInitialize)canvas).BeginInit();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)brushRadiusSlider).BeginInit();
             histogramGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)blueHistogramPictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)greenHistogramPictureBox).BeginInit();
@@ -84,7 +86,9 @@
             canvas.Size = new Size(432, 426);
             canvas.TabIndex = 0;
             canvas.TabStop = false;
+            canvas.Click += canvas_Click;
             canvas.Paint += canvas_Paint;
+            canvas.MouseClick += canvas_MouseClick;
             canvas.MouseDown += canvas_MouseDown;
             canvas.MouseMove += canvas_MouseMove;
             canvas.MouseUp += canvas_MouseUp;
@@ -93,24 +97,37 @@
             // 
             groupBox1.Controls.Add(groupBox2);
             groupBox1.Dock = DockStyle.Fill;
-            groupBox1.Location = new Point(262, 0);
+            groupBox1.Location = new Point(291, 0);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(361, 426);
+            groupBox1.Size = new Size(332, 426);
             groupBox1.TabIndex = 1;
             groupBox1.TabStop = false;
             groupBox1.Text = "Filter";
             // 
             // groupBox2
             // 
+            groupBox2.Controls.Add(brushRadiusSlider);
             groupBox2.Controls.Add(radioButton2);
             groupBox2.Controls.Add(radioButton1);
             groupBox2.Dock = DockStyle.Top;
             groupBox2.Location = new Point(3, 19);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(355, 100);
+            groupBox2.Size = new Size(326, 100);
             groupBox2.TabIndex = 0;
             groupBox2.TabStop = false;
             groupBox2.Text = "Region";
+            // 
+            // brushRadiusSlider
+            // 
+            brushRadiusSlider.Dock = DockStyle.Top;
+            brushRadiusSlider.Location = new Point(3, 57);
+            brushRadiusSlider.Maximum = 100;
+            brushRadiusSlider.Name = "brushRadiusSlider";
+            brushRadiusSlider.Size = new Size(320, 45);
+            brushRadiusSlider.TabIndex = 2;
+            brushRadiusSlider.TickFrequency = 10;
+            brushRadiusSlider.Value = 30;
+            brushRadiusSlider.ValueChanged += brushRadiusSlider_ValueChanged;
             // 
             // radioButton2
             // 
@@ -118,12 +135,11 @@
             radioButton2.Dock = DockStyle.Top;
             radioButton2.Location = new Point(3, 38);
             radioButton2.Name = "radioButton2";
-            radioButton2.Size = new Size(349, 19);
+            radioButton2.Size = new Size(320, 19);
             radioButton2.TabIndex = 1;
             radioButton2.TabStop = true;
             radioButton2.Text = "Brush";
             radioButton2.UseVisualStyleBackColor = true;
-            radioButton2.CheckedChanged += radioButton2_CheckedChanged;
             // 
             // radioButton1
             // 
@@ -131,7 +147,7 @@
             radioButton1.Dock = DockStyle.Top;
             radioButton1.Location = new Point(3, 19);
             radioButton1.Name = "radioButton1";
-            radioButton1.Size = new Size(349, 19);
+            radioButton1.Size = new Size(320, 19);
             radioButton1.TabIndex = 0;
             radioButton1.TabStop = true;
             radioButton1.Text = "Whole image";
@@ -145,7 +161,7 @@
             histogramGroupBox.Dock = DockStyle.Left;
             histogramGroupBox.Location = new Point(0, 0);
             histogramGroupBox.Name = "histogramGroupBox";
-            histogramGroupBox.Size = new Size(262, 426);
+            histogramGroupBox.Size = new Size(291, 426);
             histogramGroupBox.TabIndex = 0;
             histogramGroupBox.TabStop = false;
             histogramGroupBox.Text = "Histograms";
@@ -156,7 +172,7 @@
             blueHistogramPictureBox.Dock = DockStyle.Top;
             blueHistogramPictureBox.Location = new Point(3, 279);
             blueHistogramPictureBox.Name = "blueHistogramPictureBox";
-            blueHistogramPictureBox.Size = new Size(256, 130);
+            blueHistogramPictureBox.Size = new Size(285, 130);
             blueHistogramPictureBox.TabIndex = 2;
             blueHistogramPictureBox.TabStop = false;
             blueHistogramPictureBox.Paint += blueHistogramPictureBox_Paint;
@@ -167,7 +183,7 @@
             greenHistogramPictureBox.Dock = DockStyle.Top;
             greenHistogramPictureBox.Location = new Point(3, 149);
             greenHistogramPictureBox.Name = "greenHistogramPictureBox";
-            greenHistogramPictureBox.Size = new Size(256, 130);
+            greenHistogramPictureBox.Size = new Size(285, 130);
             greenHistogramPictureBox.TabIndex = 1;
             greenHistogramPictureBox.TabStop = false;
             greenHistogramPictureBox.Paint += greenHistogramPictureBox_Paint;
@@ -178,7 +194,7 @@
             redHistogramPictureBox.Dock = DockStyle.Top;
             redHistogramPictureBox.Location = new Point(3, 19);
             redHistogramPictureBox.Name = "redHistogramPictureBox";
-            redHistogramPictureBox.Size = new Size(256, 130);
+            redHistogramPictureBox.Size = new Size(285, 130);
             redHistogramPictureBox.TabIndex = 0;
             redHistogramPictureBox.TabStop = false;
             redHistogramPictureBox.Paint += redHistogramPictureBox_Paint;
@@ -229,6 +245,7 @@
             groupBox1.ResumeLayout(false);
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)brushRadiusSlider).EndInit();
             histogramGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)blueHistogramPictureBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)greenHistogramPictureBox).EndInit();
@@ -255,5 +272,6 @@
         private GroupBox groupBox2;
         private RadioButton radioButton2;
         private RadioButton radioButton1;
+        private TrackBar brushRadiusSlider;
     }
 }

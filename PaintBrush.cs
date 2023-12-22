@@ -11,10 +11,10 @@ namespace lab3
         public Point Position;
         public int Radius;
 
-        public PaintBrush()
+        public PaintBrush(int r)
         {
             Position = new Point(0, 0);
-            Radius = 50;
+            Radius = r;
         }
 
         public void PaintOnBitmap(DirectBitmap bitmap)
