@@ -1,3 +1,5 @@
+using System.Drawing.Drawing2D;
+
 namespace lab3
 {
     public partial class Application : Form
@@ -10,6 +12,7 @@ namespace lab3
 
         private bool isDrawing;
         private PaintBrush brush;
+        private Filter filter;
 
         public Application()
         {
@@ -18,6 +21,7 @@ namespace lab3
             filterBuffer = new DirectBitmap(canvas.Width + 1, canvas.Height + 1);
             outputBuffer = new DirectBitmap(canvas.Width + 1, canvas.Height + 1);
             brush = new PaintBrush();
+            filter = new Filter();
 
             canvas.SizeMode = PictureBoxSizeMode.StretchImage;
             SetImage(Image.FromFile("C:\\Users\\marci\\Pictures\\original.jpg"));
@@ -98,22 +102,25 @@ namespace lab3
             var g = e.Graphics;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-            for (int i = 0; i < canvas.Width; ++i)
+            //for (int i = 0; i < canvas.Width; ++i)
+            Parallel.For(0, canvas.Width, i =>
             {
-                for (int j = 0; j < canvas.Height; ++j)
+                //for (int j = 0; j < canvas.Height; ++j)
+                Parallel.For(0, canvas.Height, j =>
                 {
                     Color col;
                     if (filterBuffer.IsPixelColored(i, j))
-                        col = Color.Black;
+                        col = filter.Apply(ref image, i, j);
                     else
                         col = image.GetPixel(i, j);
 
                     outputBuffer.SetPixel(i, j, col);
-                }
-            }
+                });
+            });
 
             g.DrawImage(outputBuffer.Bitmap, 0, 0);
         }
+
 
         private void canvas_MouseDown(object sender, MouseEventArgs e)
         {

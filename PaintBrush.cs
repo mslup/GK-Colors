@@ -14,7 +14,7 @@ namespace lab3
         public PaintBrush()
         {
             Position = new Point(0, 0);
-            Radius = 10;
+            Radius = 50;
         }
 
         public void PaintOnBitmap(DirectBitmap bitmap)
@@ -25,13 +25,17 @@ namespace lab3
             int jEnd = Math.Min(Position.Y + Radius, bitmap.Height - 1);
 
             for (int i = iStart; i <= iEnd; i++)
+            //Parallel.For(iStart, iEnd, i =>
             {
-                for (int j = jStart; j <= jEnd; j++) 
+                for (int j = jStart; j <= jEnd; j++)
+                //Parallel.For(jStart, jEnd, j =>
                 {
                     if (IsInsideCircle(i, j))
                         bitmap.SetPixelColored(i, j);
                 }
+                //);
             }
+            //);
         }
 
         private bool IsInsideCircle(int x, int y) =>
